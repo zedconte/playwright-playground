@@ -1,5 +1,8 @@
 # playwright-playground
 
+[![Tests & coverage dashboard](https://github.com/zedconte/playwright-playground/actions/workflows/coverage.yml/badge.svg?branch=main)](https://github.com/zedconte/playwright-playground/actions/workflows/coverage.yml)
+[![Coverage dashboard](https://img.shields.io/badge/coverage-dashboard-2a78d6)](https://zedconte.github.io/playwright-playground/)
+
 A Playwright project that showcases LLM-assisted development. It includes:
 
 - **Self test discovery.** A crawler maps every page and interactive element on a site. Smoke, link and form tests are generated from that inventory automatically.
