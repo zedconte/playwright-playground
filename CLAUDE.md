@@ -12,7 +12,10 @@ A Playwright project that showcases LLM-assisted development. It has a self-disc
 - `npm run discover`: forces a crawl, writing `.discovery/<site>.json`
 - Single file: `npx playwright test tests/flows/cart.spec.ts`. Single test: add `-g "<title>"`
 - `npm run test:authored` / `npm run test:discovered`: only hand-written / only generated tests
-- `npm run typecheck`: `tsc` for framework and tests, `vue-tsc` for the dashboard. There is no linter
+- `npm run typecheck`: `tsc` for framework and tests, `vue-tsc` for the dashboard
+- `npm run lint` (ESLint, `--max-warnings=0`) / `npm run lint:fix`; `npm run format` / `format:check` (Prettier)
+- `npm run test:unit`: Vitest unit tests. Single file: `npx vitest run framework/in-page.test.ts`. Single test: add `-t "<name>"`
+- `npm run check`: typecheck + lint + format check + unit tests (no browser); run before committing
 - `npm run dashboard:dev`: Vite dev server for the dashboard, reading the last run's `coverage-report/coverage.json`
 
 ## Architecture
@@ -25,4 +28,5 @@ A Playwright project that showcases LLM-assisted development. It has a self-disc
 - `framework/reporter/coverage-reporter.ts`: joins the attachments with the inventory and writes `coverage.json`. It produces `index.html` by inlining `dashboard/dist` and injecting the data.
 - `framework/reporter/model.ts`: the coverage model and `summarize()`. The reporter and the Vue app (`dashboard/src`) both import it, so keep it free of Node imports.
 - `.github/workflows/coverage.yml`: CI runs `npm test` and deploys `coverage-report/` to GitHub Pages from `main` (the Pages source must be set to "GitHub Actions"). When `GITHUB_STEP_SUMMARY` is set, the reporter also writes a coverage table to it.
+- Unit tests are colocated `*.test.ts` under `framework/` and `dashboard/src/`, never under `tests/`: Playwright's default `testMatch` would also collect `*.test.ts` there. DOM tests use happy-dom. `framework/in-page.test.ts` gives each test a fresh `Window`, because the script attaches document listeners that would otherwise leak between tests.
 - Changing anything in a profile that affects discovery changes the inventory fingerprint and triggers a re-crawl on the next `npm test`.

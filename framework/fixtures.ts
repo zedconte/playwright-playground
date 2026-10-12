@@ -40,6 +40,7 @@ export class CoverageRecorder {
  * Import `test` and `expect` from here instead of `@playwright/test`.
  */
 export const test = base.extend<{ coverage: CoverageRecorder }>({
+  // eslint-disable-next-line no-empty-pattern -- Playwright requires destructuring, even with no dependencies
   coverage: async ({}, use, testInfo) => {
     const recorder = new CoverageRecorder();
     await use(recorder);

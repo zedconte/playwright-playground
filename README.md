@@ -22,16 +22,20 @@ open coverage-report/index.html
 
 ## Commands
 
-| Command | What it does |
-| --- | --- |
-| `npm test` | Builds the dashboard, re-discovers the site if the inventory is missing, older than 24 h or the config changed, then runs every test |
-| `npm run discover` | Forces a fresh crawl and writes `.discovery/<site>.json` |
-| `npm run test:authored` | Hand-written flows only (`tests/flows/`) |
-| `npm run test:discovered` | Generated suites only (`tests/discovered/`, tag `@discovered`) |
-| `npx playwright test tests/flows/cart.spec.ts` | A single file. Add `-g "quantity"` to run a single test |
-| `npm run report` | Opens Playwright's HTML report |
-| `npm run dashboard:dev` | Runs the Vue dashboard with hot reload, using the last run's `coverage-report/coverage.json` |
-| `npm run typecheck` | `tsc` for the framework and tests, `vue-tsc` for the dashboard |
+| Command                                        | What it does                                                                                                                         |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `npm test`                                     | Builds the dashboard, re-discovers the site if the inventory is missing, older than 24 h or the config changed, then runs every test |
+| `npm run discover`                             | Forces a fresh crawl and writes `.discovery/<site>.json`                                                                             |
+| `npm run test:authored`                        | Hand-written flows only (`tests/flows/`)                                                                                             |
+| `npm run test:discovered`                      | Generated suites only (`tests/discovered/`, tag `@discovered`)                                                                       |
+| `npx playwright test tests/flows/cart.spec.ts` | A single file. Add `-g "quantity"` to run a single test                                                                              |
+| `npm run report`                               | Opens Playwright's HTML report                                                                                                       |
+| `npm run dashboard:dev`                        | Runs the Vue dashboard with hot reload, using the last run's `coverage-report/coverage.json`                                         |
+| `npm run typecheck`                            | `tsc` for the framework and tests, `vue-tsc` for the dashboard                                                                       |
+| `npm run test:unit`                            | Unit tests (Vitest); `test:unit:watch` re-runs them on save                                                                          |
+| `npm run lint` / `lint:fix`                    | ESLint, with zero warnings allowed / autofix                                                                                         |
+| `npm run format` / `format:check`              | Prettier: rewrite files / check only                                                                                                 |
+| `npm run check`                                | Everything except the browser tests: typecheck, lint, format check, unit tests                                                       |
 
 ## How it works
 
@@ -68,20 +72,35 @@ test('adds to cart', async ({ page }) => {
 
 Put hand-written tests in `tests/flows/`.
 
+### Unit tests
+
+Unit tests use [Vitest](https://vitest.dev) and live next to the code they test as `*.test.ts`: `framework/**` and `dashboard/src/**`. They stay out of `tests/`, which belongs to Playwright. They cover:
+
+- **`framework/in-page.test.ts`:** element signatures and interaction tracking, run in a [happy-dom](https://github.com/capricorn86/happy-dom) window. This is the contract that discovery and coverage tracking produce identical signatures.
+- **`framework/reporter/model.test.ts`:** the coverage math shared by the reporter and the dashboard.
+- **`framework/config.test.ts`:** profile merging (including the always-on logout/delete excludes), page keys, and the inventory fingerprint.
+- **`dashboard/src/**`:** formatting helpers and the element explorer component, using `@vue/test-utils`.
+
+Tests that need a DOM opt in with `// @vitest-environment happy-dom` at the top of the file.
+
+### Linting and formatting
+
+ESLint (`eslint.config.mjs`) combines `typescript-eslint`, `eslint-plugin-vue` and `eslint-plugin-playwright`. The Playwright rules apply to `tests/**/*.spec.ts`, with conditional-logic rules relaxed for the data-driven `tests/discovered/` suites. Prettier (`.prettierrc.json`) owns formatting, and `eslint-config-prettier` turns off ESLint's style rules so the two never conflict.
+
 ## Customizing
 
 Everything site-specific lives in a profile under `sites/`. See `sites/automationexercise.ts` for a full example and `framework/config.ts` for every option and its default.
 
-| Option | Use it to |
-| --- | --- |
-| `baseURL`, `startPaths` | Point at a site (`BASE_URL` env var overrides the default) |
-| `crawl.maxPages / maxDepth / maxPerTemplate` | Bound the crawl, e.g. 3 product pages instead of 500 |
-| `crawl.include / exclude` | Keep the crawler and link checker inside safe areas. Logout and delete URLs are always excluded |
-| `pageKey`, `pageTemplate` | Decide when two URLs are the same page and which pages share a template |
-| `blockRequests` | Abort ads and trackers that make runs flaky |
-| `elements.selectors / identityAttributes / ignore / includeHidden` | Control what counts as an element and how it's identified (`data-testid`, `data-qa`, …) |
-| `checks.*` | Toggle console-error, broken-image, drift, link and form checks, and set sample form values |
-| `report.thresholds`, `failOnThreshold` | Set coverage targets (shown on the dashboard) and optionally fail the run when they're missed |
+| Option                                                             | Use it to                                                                                       |
+| ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
+| `baseURL`, `startPaths`                                            | Point at a site (`BASE_URL` env var overrides the default)                                      |
+| `crawl.maxPages / maxDepth / maxPerTemplate`                       | Bound the crawl, e.g. 3 product pages instead of 500                                            |
+| `crawl.include / exclude`                                          | Keep the crawler and link checker inside safe areas. Logout and delete URLs are always excluded |
+| `pageKey`, `pageTemplate`                                          | Decide when two URLs are the same page and which pages share a template                         |
+| `blockRequests`                                                    | Abort ads and trackers that make runs flaky                                                     |
+| `elements.selectors / identityAttributes / ignore / includeHidden` | Control what counts as an element and how it's identified (`data-testid`, `data-qa`, …)         |
+| `checks.*`                                                         | Toggle console-error, broken-image, drift, link and form checks, and set sample form values     |
+| `report.thresholds`, `failOnThreshold`                             | Set coverage targets (shown on the dashboard) and optionally fail the run when they're missed   |
 
 To add a site, create `sites/<name>.ts` with `defineSite({...})`, register it in `sites/index.ts`, and run with `SITE=<name> npm test`.
 
@@ -89,10 +108,11 @@ To add a site, create `sites/<name>.ts` with `defineSite({...})`, register it in
 
 `.github/workflows/coverage.yml` runs on pushes to `main`, on pull requests, on weekday mornings (06:00 UTC, to catch changes on the live site) and on demand. Each run:
 
-1. installs dependencies and Chromium, then typechecks;
-2. runs `npm test`, which crawls the site fresh because the inventory isn't committed, then runs every test;
-3. writes a coverage table to the run's **job summary**;
-4. uploads `playwright-report` and `coverage-dashboard` as artifacts (kept for 14 days; pull requests get them here);
-5. on `main`, deploys the dashboard to **GitHub Pages**. This happens even when tests fail, because that's when you most need it.
+1. installs dependencies, then runs typecheck, lint, the format check and unit tests (fast, before any browser is installed);
+1. installs Chromium;
+1. runs `npm test`, which crawls the site fresh because the inventory isn't committed, then runs every test;
+1. writes a coverage table to the run's **job summary**;
+1. uploads `playwright-report` and `coverage-dashboard` as artifacts (kept for 14 days; pull requests get them here);
+1. on `main`, deploys the dashboard to **GitHub Pages**. This happens even when tests fail, because that's when you most need it.
 
 **One-time setup:** in the repo go to **Settings → Pages → Build and deployment → Source** and choose **GitHub Actions**. The dashboard is then served at `https://<owner>.github.io/<repo>/` (`/coverage.json` holds the raw data).

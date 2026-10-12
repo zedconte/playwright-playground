@@ -32,9 +32,13 @@ jobs:
 
       - run: npm ci
 
-      - run: npx playwright install --with-deps chromium
-
+      # Fast checks first, so a lint or unit failure doesn't wait for a browser install.
       - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run test:unit
+
+      - run: npx playwright install --with-deps chromium
 
       # Crawls the site (the inventory is not committed), runs every test, and writes coverage-report/.
       - name: Run tests
