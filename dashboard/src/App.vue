@@ -41,7 +41,9 @@ async function selectPage(key: string) {
         <div class="meta">
           <a :href="meta.baseURL" target="_blank" rel="noopener">{{ meta.baseURL }}</a>
           <span>Run {{ dateTime(meta.generatedAt) }} · {{ duration(meta.durationMs) }}</span>
-          <span :title="meta.inventoryGeneratedAt ? dateTime(meta.inventoryGeneratedAt) : ''">Discovery {{ discoveryAge(meta.inventoryGeneratedAt, meta.generatedAt, meta.durationMs) }}</span>
+          <span :title="meta.inventoryGeneratedAt ? dateTime(meta.inventoryGeneratedAt) : ''"
+            >Discovery {{ discoveryAge(meta.inventoryGeneratedAt, meta.generatedAt, meta.durationMs) }}</span
+          >
         </div>
       </div>
       <div class="run" :class="meta.status">
@@ -51,14 +53,15 @@ async function selectPage(key: string) {
     </header>
 
     <div v-if="!meta.inventoryGeneratedAt" class="card notice">
-      No discovery inventory was found, so there is nothing to measure against. Run <code>npm run discover</code>, then the tests again.
+      No discovery inventory was found, so there is nothing to measure against. Run <code>npm run discover</code>, then
+      the tests again.
     </div>
 
     <div class="filters" role="group" aria-label="Which tests count toward coverage">
       <span class="muted">Count coverage from</span>
       <div class="segmented" role="radiogroup">
         <button
-          v-for="s in (['all', 'authored', 'discovered'] as const)"
+          v-for="s in ['all', 'authored', 'discovered'] as const"
           :key="s"
           role="radio"
           :aria-checked="source === s"
@@ -100,17 +103,28 @@ async function selectPage(key: string) {
       <div class="section-head">
         <div>
           <h2>Outside the inventory</h2>
-          <p>Tests reached these, but discovery did not. Widen <code>crawl</code> or <code>includeHidden</code> in the site profile to measure them.</p>
+          <p>
+            Tests reached these, but discovery did not. Widen <code>crawl</code> or <code>includeHidden</code> in the
+            site profile to measure them.
+          </p>
         </div>
       </div>
       <div class="outside">
         <div v-if="model.outside.pages.length">
           <h3>Pages</h3>
-          <ul><li v-for="p in model.outside.pages" :key="p.key"><code>{{ p.key }}</code></li></ul>
+          <ul>
+            <li v-for="p in model.outside.pages" :key="p.key">
+              <code>{{ p.key }}</code>
+            </li>
+          </ul>
         </div>
         <div v-if="model.outside.elements.length">
           <h3>Elements</h3>
-          <ul><li v-for="e in model.outside.elements" :key="e.sig"><code>{{ e.sig }}</code></li></ul>
+          <ul>
+            <li v-for="e in model.outside.elements" :key="e.sig">
+              <code>{{ e.sig }}</code>
+            </li>
+          </ul>
         </div>
       </div>
     </div>

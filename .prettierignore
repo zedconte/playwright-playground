@@ -1,0 +1,7 @@
+node_modules/
+package-lock.json
+dashboard/dist/
+coverage-report/
+playwright-report/
+test-results/
+.discovery/

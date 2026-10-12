@@ -18,10 +18,13 @@ const rows = computed(() => {
     coverage: pageCoverage(props.model, page, props.filter),
   }));
   const value = (r: (typeof list)[number]) =>
-    sortKey.value === 'key' ? r.page.key
-    : sortKey.value === 'visits' ? r.visits
-    : sortKey.value === 'elements' ? r.page.elements.length
-    : r.coverage.pct;
+    sortKey.value === 'key'
+      ? r.page.key
+      : sortKey.value === 'visits'
+        ? r.visits
+        : sortKey.value === 'elements'
+          ? r.page.elements.length
+          : r.coverage.pct;
   return list.sort((a, b) => {
     const [x, y] = [value(a), value(b)];
     const order = typeof x === 'string' ? x.localeCompare(y as string) : (x as number) - (y as number);
@@ -68,7 +71,9 @@ const arrow = (key: SortKey) => (sortKey.value === key ? (ascending.value ? ' â†
               <div class="key">{{ r.page.key }}</div>
               <div class="muted title">{{ r.page.title }}</div>
             </td>
-            <td><code class="muted">{{ r.page.template }}</code></td>
+            <td>
+              <code class="muted">{{ r.page.template }}</code>
+            </td>
             <td class="num">
               <span v-if="r.visits">{{ r.visits }} {{ r.visits === 1 ? 'test' : 'tests' }}</span>
               <span v-else class="unvisited"><span aria-hidden="true">â—‹</span> Not visited</span>

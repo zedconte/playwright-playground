@@ -21,13 +21,22 @@ const unique = computed(() => {
 });
 
 const rows = computed(() => {
-  const list = props.model.tests.map((test, i) => ({ test, i, counted: props.filter(test, i), unique: unique.value[i] }));
+  const list = props.model.tests.map((test, i) => ({
+    test,
+    i,
+    counted: props.filter(test, i),
+    unique: unique.value[i],
+  }));
   const value = (r: (typeof list)[number]): string | number =>
-    sortKey.value === 'title' ? r.test.title
-    : sortKey.value === 'status' ? r.test.status
-    : sortKey.value === 'duration' ? r.test.durationMs
-    : sortKey.value === 'touched' ? r.test.touched
-    : r.unique;
+    sortKey.value === 'title'
+      ? r.test.title
+      : sortKey.value === 'status'
+        ? r.test.status
+        : sortKey.value === 'duration'
+          ? r.test.durationMs
+          : sortKey.value === 'touched'
+            ? r.test.touched
+            : r.unique;
   return list.sort((a, b) => {
     const [x, y] = [value(a), value(b)];
     const order = typeof x === 'string' ? x.localeCompare(y as string) : (x as number) - (y as number);
@@ -59,7 +68,9 @@ const arrow = (key: SortKey) => (sortKey.value === key ? (ascending.value ? ' â†
             <th class="sortable" @click="sortBy('status')">Status{{ arrow('status') }}</th>
             <th class="sortable num" @click="sortBy('duration')">Duration{{ arrow('duration') }}</th>
             <th class="sortable num" @click="sortBy('touched')">Elements{{ arrow('touched') }}</th>
-            <th class="sortable num" @click="sortBy('unique')" title="Elements no other counted test covers">Unique{{ arrow('unique') }}</th>
+            <th class="sortable num" title="Elements no other counted test covers" @click="sortBy('unique')">
+              Unique{{ arrow('unique') }}
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -69,7 +80,9 @@ const arrow = (key: SortKey) => (sortKey.value === key ? (ascending.value ? ' â†
               <code class="muted">{{ r.test.file }}:{{ r.test.line }}</code>
             </td>
             <td>
-              <span class="source" :class="{ discovered: r.test.discovered }">{{ r.test.discovered ? 'Discovered' : 'Authored' }}</span>
+              <span class="source" :class="{ discovered: r.test.discovered }">{{
+                r.test.discovered ? 'Discovered' : 'Authored'
+              }}</span>
             </td>
             <td><StatusBadge :status="r.test.status" /></td>
             <td class="num">{{ duration(r.test.durationMs) }}</td>

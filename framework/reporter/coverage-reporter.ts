@@ -182,7 +182,8 @@ export default class CoverageReporter implements Reporter {
       `  Elements   ${fmt(all.elements)}   ${fmt(authored.elements)}`,
       `  Forms      ${fmt(all.forms)}   ${fmt(authored.forms)}`,
     ];
-    if (!model.meta.inventoryGeneratedAt) lines.push('  No inventory found: run `npm run discover` to measure against the site.');
+    if (!model.meta.inventoryGeneratedAt)
+      lines.push('  No inventory found: run `npm run discover` to measure against the site.');
     if (model.outside.pages.length || model.outside.elements.length) {
       lines.push(
         `  Outside inventory: ${model.outside.pages.length} page(s), ${model.outside.elements.length} element(s) — consider widening discovery.`,

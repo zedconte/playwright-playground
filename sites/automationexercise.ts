@@ -7,7 +7,8 @@ export default defineSite({
   baseURL: process.env.BASE_URL ?? 'https://automationexercise.com',
   startPaths: ['/', '/products', '/login', '/contact_us', '/view_cart'],
   // Google vignette ads hijack navigation on this site; blocking them keeps runs deterministic.
-  blockRequests: /googlesyndication|doubleclick|googleadservices|adservice\.google|google-analytics|googletagmanager|fundingchoicesmessages/,
+  blockRequests:
+    /googlesyndication|doubleclick|googleadservices|adservice\.google|google-analytics|googletagmanager|fundingchoicesmessages/,
   crawl: {
     maxPages: 40,
     maxDepth: 2,

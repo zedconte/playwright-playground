@@ -20,11 +20,13 @@ test.describe('discovered pages', { tag: DISCOVERED_TAG }, () => {
       await expect(page).toHaveTitle(/\S/);
 
       if (site.checks.brokenImages) {
-        const broken = await page.locator('img').evaluateAll(imgs =>
-          (imgs as HTMLImageElement[])
-            .filter(img => img.complete && img.naturalWidth === 0 && img.getAttribute('src'))
-            .map(img => img.currentSrc || img.src),
-        );
+        const broken = await page
+          .locator('img')
+          .evaluateAll(imgs =>
+            (imgs as HTMLImageElement[])
+              .filter(img => img.complete && img.naturalWidth === 0 && img.getAttribute('src'))
+              .map(img => img.currentSrc || img.src),
+          );
         expect.soft(broken, 'broken images').toEqual([]);
       }
 

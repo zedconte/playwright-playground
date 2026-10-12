@@ -46,7 +46,11 @@ function show(event: MouseEvent, row: KindSummary) {
         @focus="tip = null"
       >
         <div class="name">{{ LABELS[row.kind] }}</div>
-        <div class="bar" role="img" :aria-label="`${LABELS[row.kind]}: ${row.interacted} interacted, ${row.verifiedOnly} HTTP-checked only, of ${row.total}`">
+        <div
+          class="bar"
+          role="img"
+          :aria-label="`${LABELS[row.kind]}: ${row.interacted} interacted, ${row.verifiedOnly} HTTP-checked only, of ${row.total}`"
+        >
           <div v-if="row.interacted" class="seg s1" :style="{ width: `${share(row.interacted, row.total)}%` }" />
           <div v-if="row.verifiedOnly" class="seg s2" :style="{ width: `${share(row.verifiedOnly, row.total)}%` }" />
         </div>
@@ -59,9 +63,17 @@ function show(event: MouseEvent, row: KindSummary) {
 
     <div v-if="tip" class="tooltip" :style="{ left: `${tip.x + 14}px`, top: `${tip.y + 14}px` }">
       <div class="tip-title">{{ LABELS[tip.row.kind] }} · {{ tip.row.total }} discovered</div>
-      <div><i class="swatch s1" />Interacted <b>{{ tip.row.interacted }}</b> <span class="muted">({{ pct(share(tip.row.interacted, tip.row.total)) }})</span></div>
-      <div><i class="swatch s2" />HTTP-checked only <b>{{ tip.row.verifiedOnly }}</b> <span class="muted">({{ pct(share(tip.row.verifiedOnly, tip.row.total)) }})</span></div>
-      <div><i class="swatch none" />Not covered <b>{{ tip.row.total - tip.row.interacted - tip.row.verifiedOnly }}</b></div>
+      <div>
+        <i class="swatch s1" />Interacted <b>{{ tip.row.interacted }}</b>
+        <span class="muted">({{ pct(share(tip.row.interacted, tip.row.total)) }})</span>
+      </div>
+      <div>
+        <i class="swatch s2" />HTTP-checked only <b>{{ tip.row.verifiedOnly }}</b>
+        <span class="muted">({{ pct(share(tip.row.verifiedOnly, tip.row.total)) }})</span>
+      </div>
+      <div>
+        <i class="swatch none" />Not covered <b>{{ tip.row.total - tip.row.interacted - tip.row.verifiedOnly }}</b>
+      </div>
     </div>
   </div>
 </template>
@@ -82,9 +94,16 @@ function show(event: MouseEvent, row: KindSummary) {
   margin-right: 6px;
   vertical-align: -1px;
 }
-.s1 { background: var(--series-1); }
-.s2 { background: var(--series-2); }
-.swatch.none { background: var(--track); box-shadow: inset 0 0 0 1px var(--axis); }
+.s1 {
+  background: var(--series-1);
+}
+.s2 {
+  background: var(--series-2);
+}
+.swatch.none {
+  background: var(--track);
+  box-shadow: inset 0 0 0 1px var(--axis);
+}
 .rows {
   display: flex;
   flex-direction: column;

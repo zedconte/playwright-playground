@@ -52,7 +52,7 @@ async function copy(el: ElementRow) {
 </script>
 
 <template>
-  <div class="card" id="elements">
+  <div id="elements" class="card">
     <div class="section-head">
       <div>
         <h2>Elements</h2>
@@ -61,17 +61,32 @@ async function copy(el: ElementRow) {
     </div>
 
     <div class="toolbar">
-      <input v-model="query" class="control search" type="search" placeholder="Search label, signature or selector" aria-label="Search elements" />
+      <input
+        v-model="query"
+        class="control search"
+        type="search"
+        placeholder="Search label, signature or selector"
+        aria-label="Search elements"
+      />
       <select v-model="kind" class="control" aria-label="Element kind">
         <option value="all">All kinds</option>
         <option v-for="k in KIND_ORDER" :key="k" :value="k">{{ k }}</option>
       </select>
       <div class="segmented" role="radiogroup" aria-label="Coverage state">
-        <button v-for="s in (['uncovered', 'covered', 'all'] as const)" :key="s" role="radio" :aria-checked="state === s" :class="{ on: state === s }" @click="state = s">
+        <button
+          v-for="s in ['uncovered', 'covered', 'all'] as const"
+          :key="s"
+          role="radio"
+          :aria-checked="state === s"
+          :class="{ on: state === s }"
+          @click="state = s"
+        >
           {{ s === 'all' ? 'All' : s === 'covered' ? 'Covered' : 'Uncovered' }}
         </button>
       </div>
-      <button v-if="page" class="control chip" @click="emit('clearPage')">Page: {{ page }} <span aria-hidden="true">✕</span></button>
+      <button v-if="page" class="control chip" @click="emit('clearPage')">
+        Page: {{ page }} <span aria-hidden="true">✕</span>
+      </button>
       <span class="muted count">{{ rows.length }} element{{ rows.length === 1 ? '' : 's' }}</span>
     </div>
 
@@ -92,7 +107,9 @@ async function copy(el: ElementRow) {
               <div class="label">{{ r.el.label || '(no label)' }}</div>
               <code class="muted sig">{{ r.el.sig }}</code>
             </td>
-            <td><span class="kind">{{ r.el.kind }}</span></td>
+            <td>
+              <span class="kind">{{ r.el.kind }}</span>
+            </td>
             <td>
               <span class="state" :class="r.status"><i aria-hidden="true" />{{ STATE_LABEL[r.status] }}</span>
             </td>
@@ -193,10 +210,18 @@ async function copy(el: ElementRow) {
   height: 9px;
   border-radius: 50%;
 }
-.state.interacted i { background: var(--series-1); }
-.state.verified i { background: var(--series-2); }
-.state.none { color: var(--text-muted); }
-.state.none i { box-shadow: inset 0 0 0 1.5px var(--text-muted); }
+.state.interacted i {
+  background: var(--series-1);
+}
+.state.verified i {
+  background: var(--series-2);
+}
+.state.none {
+  color: var(--text-muted);
+}
+.state.none i {
+  box-shadow: inset 0 0 0 1.5px var(--text-muted);
+}
 .by {
   max-width: 280px;
   font-size: 12px;

@@ -81,7 +81,10 @@ async function crawl(context: BrowserContext): Promise<Inventory> {
     };
     const page = await context.newPage();
     try {
-      const response = await page.goto(url.href, { waitUntil: 'domcontentloaded', timeout: site.crawl.navigationTimeout });
+      const response = await page.goto(url.href, {
+        waitUntil: 'domcontentloaded',
+        timeout: site.crawl.navigationTimeout,
+      });
       entry.status = response?.status() ?? 0;
       const contentType = response?.headers()['content-type'] ?? '';
       if (contentType && !contentType.includes('html')) return;
@@ -98,7 +101,10 @@ async function crawl(context: BrowserContext): Promise<Inventory> {
 
       await page.waitForTimeout(site.crawl.settleMs);
       entry.title = await page.title();
-      const catalog = (await page.evaluate('window.__pwcov.catalog()')) as { elements: CatalogEntry[]; links: string[] };
+      const catalog = (await page.evaluate('window.__pwcov.catalog()')) as {
+        elements: CatalogEntry[];
+        links: string[];
+      };
       for (const item of catalog.elements) {
         entry.elements.push(item.sig);
         const known = elements[item.sig];
@@ -178,7 +184,9 @@ async function main() {
     const ok = inventory.pages.filter(p => !p.error).length;
     console.log(
       `\nDiscovered ${ok} pages and ${Object.keys(inventory.elements).length} unique elements ` +
-        `(${Object.entries(kinds).map(([k, n]) => `${n} ${k}`).join(', ')}) in ${((Date.now() - started) / 1000).toFixed(1)}s`,
+        `(${Object.entries(kinds)
+          .map(([k, n]) => `${n} ${k}`)
+          .join(', ')}) in ${((Date.now() - started) / 1000).toFixed(1)}s`,
     );
     console.log(`Inventory written to ${file}`);
   } finally {

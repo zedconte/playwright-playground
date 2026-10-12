@@ -23,6 +23,7 @@ test.describe('discovered forms', { tag: DISCOVERED_TAG }, () => {
 
       for (const field of form.fields!) {
         const control = page.locator(field.selector).first();
+
         await test.step(field.sig, async () => {
           await expect(control).toBeVisible();
           await expect(control).toBeEnabled();
@@ -32,7 +33,11 @@ test.describe('discovered forms', { tag: DISCOVERED_TAG }, () => {
                 await control.check();
                 await expect(control).toBeChecked();
               } else if (field.type === 'file') {
-                await control.setInputFiles({ name: 'playwright.txt', mimeType: 'text/plain', buffer: Buffer.from('hi') });
+                await control.setInputFiles({
+                  name: 'playwright.txt',
+                  mimeType: 'text/plain',
+                  buffer: Buffer.from('hi'),
+                });
               } else {
                 const value = sampleValue(field);
                 await control.fill(value);
@@ -46,9 +51,9 @@ test.describe('discovered forms', { tag: DISCOVERED_TAG }, () => {
               break;
             }
             case 'select': {
-              const options = await control.locator('option').evaluateAll(opts =>
-                (opts as HTMLOptionElement[]).map(o => o.value).filter(Boolean),
-              );
+              const options = await control
+                .locator('option')
+                .evaluateAll(opts => (opts as HTMLOptionElement[]).map(o => o.value).filter(Boolean));
               if (options.length) await control.selectOption(options[options.length > 1 ? 1 : 0]);
               break;
             }

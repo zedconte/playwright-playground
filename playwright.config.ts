@@ -10,11 +10,7 @@ export default defineConfig({
   workers: process.env.CI ? 2 : 4,
   timeout: 60_000,
   expect: { timeout: 10_000 },
-  reporter: [
-    ['list'],
-    ['html', { open: 'never' }],
-    ['./framework/reporter/coverage-reporter.ts'],
-  ],
+  reporter: [['list'], ['html', { open: 'never' }], ['./framework/reporter/coverage-reporter.ts']],
   use: {
     baseURL: site.baseURL,
     trace: 'on-first-retry',

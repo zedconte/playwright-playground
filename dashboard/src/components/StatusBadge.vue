@@ -8,7 +8,10 @@ const LABEL: Record<TestStatus, string> = { passed: 'Passed', failed: 'Failed', 
 </script>
 
 <template>
-  <span class="status" :class="status"><span class="icon" aria-hidden="true">{{ ICON[status] }}</span>{{ LABEL[status] }}</span>
+  <span class="status" :class="status"
+    ><span class="icon" aria-hidden="true">{{ ICON[status] }}</span
+    >{{ LABEL[status] }}</span
+  >
 </template>
 
 <style scoped>
@@ -28,8 +31,18 @@ const LABEL: Record<TestStatus, string> = { passed: 'Passed', failed: 'Failed', 
   font-weight: 700;
   color: #fff;
 }
-.passed .icon { background: var(--good); }
-.failed .icon { background: var(--critical); }
-.flaky .icon { background: var(--warning); color: #0b0b0b; }
-.skipped .icon { background: var(--axis); color: var(--text-primary); }
+.passed .icon {
+  background: var(--good);
+}
+.failed .icon {
+  background: var(--critical);
+}
+.flaky .icon {
+  background: var(--warning);
+  color: #0b0b0b;
+}
+.skipped .icon {
+  background: var(--axis);
+  color: var(--text-primary);
+}
 </style>
