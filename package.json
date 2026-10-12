@@ -1,0 +1,28 @@
+{
+  "name": "playwright-playground",
+  "version": "1.0.0",
+  "description": "Playwright framework with self-discovering tests and a Vue coverage dashboard (LLM-assisted development showcase)",
+  "scripts": {
+    "discover": "tsx framework/discover.ts",
+    "test": "npm run dashboard:build --silent && tsx framework/discover.ts --if-stale && playwright test",
+    "test:authored": "playwright test --grep-invert @discovered",
+    "test:discovered": "playwright test --grep @discovered",
+    "report": "playwright show-report",
+    "dashboard:build": "vite build dashboard --logLevel warn",
+    "dashboard:dev": "vite dashboard",
+    "typecheck": "tsc -p . && vue-tsc -p dashboard"
+  },
+  "keywords": [],
+  "author": "Raul Ortega",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.64.0",
+    "@types/node": "^20.19.43",
+    "@vitejs/plugin-vue": "^6.0.10",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.4",
+    "vue": "^3.5.43",
+    "vue-tsc": "^3.3.13"
+  }
+}
