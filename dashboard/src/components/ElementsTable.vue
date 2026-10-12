@@ -111,7 +111,7 @@ async function copy(el: ElementRow) {
             </td>
           </tr>
           <tr v-if="!rows.length">
-            <td colspan="5" class="muted none">No elements match these filters.</td>
+            <td colspan="5" class="muted empty-row">No elements match these filters.</td>
           </tr>
         </tbody>
       </table>
@@ -227,7 +227,7 @@ async function copy(el: ElementRow) {
 .copy:focus-visible .muted {
   opacity: 1;
 }
-.none {
+.empty-row {
   text-align: center;
   padding: 24px;
 }

@@ -7,7 +7,7 @@ import KindBreakdown from './components/KindBreakdown.vue';
 import PagesTable from './components/PagesTable.vue';
 import ElementsTable from './components/ElementsTable.vue';
 import TestsTable from './components/TestsTable.vue';
-import { dateTime, duration, timeAgo } from './format';
+import { dateTime, discoveryAge, duration } from './format';
 
 const props = defineProps<{ model: CoverageModel }>();
 
@@ -41,7 +41,7 @@ async function selectPage(key: string) {
         <div class="meta">
           <a :href="meta.baseURL" target="_blank" rel="noopener">{{ meta.baseURL }}</a>
           <span>Run {{ dateTime(meta.generatedAt) }} · {{ duration(meta.durationMs) }}</span>
-          <span>Discovery {{ timeAgo(meta.inventoryGeneratedAt) }}</span>
+          <span :title="meta.inventoryGeneratedAt ? dateTime(meta.inventoryGeneratedAt) : ''">Discovery {{ discoveryAge(meta.inventoryGeneratedAt, meta.generatedAt, meta.durationMs) }}</span>
         </div>
       </div>
       <div class="run" :class="meta.status">

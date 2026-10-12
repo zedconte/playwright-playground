@@ -6,13 +6,15 @@ export function duration(ms: number): string {
   return `${Math.floor(ms / 60_000)}m ${Math.round((ms % 60_000) / 1000)}s`;
 }
 
-export function timeAgo(iso: string | null): string {
-  if (!iso) return 'never';
-  const minutes = Math.round((Date.now() - Date.parse(iso)) / 60_000);
-  if (minutes < 1) return 'just now';
-  if (minutes < 60) return `${minutes} min ago`;
+/** How old the inventory was when the run started; relative to the run, not the viewer, so published reports stay accurate. */
+export function discoveryAge(inventoryIso: string | null, runEndIso: string, runMs: number): string {
+  if (!inventoryIso) return 'not run';
+  const runStart = Date.parse(runEndIso) - runMs;
+  const minutes = Math.round((runStart - Date.parse(inventoryIso)) / 60_000);
+  if (minutes < 2) return 'crawled for this run';
+  if (minutes < 60) return `crawled ${minutes} min before this run`;
   const hours = Math.round(minutes / 60);
-  return hours < 48 ? `${hours} h ago` : `${Math.round(hours / 24)} days ago`;
+  return `crawled ${hours < 48 ? `${hours} h` : `${Math.round(hours / 24)} days`} before this run`;
 }
 
 export const dateTime = (iso: string): string =>
