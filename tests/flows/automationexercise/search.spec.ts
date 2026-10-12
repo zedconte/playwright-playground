@@ -1,4 +1,4 @@
-import { test, expect } from '../../framework/fixtures';
+import { test, expect } from '../../../framework/fixtures';
 
 test.describe('product search', () => {
   test('finds products matching a term', async ({ page }) => {

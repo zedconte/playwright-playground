@@ -1,7 +1,9 @@
 import { sites } from '../sites';
 import type { SiteConfig } from './config';
 
-const selected = process.env.SITE ?? 'automationexercise';
+export const DEFAULT_SITE = 'automationexercise';
+
+const selected = process.env.SITE ?? DEFAULT_SITE;
 const profile = sites[selected];
 if (!profile) {
   throw new Error(`Unknown SITE "${selected}". Available: ${Object.keys(sites).join(', ')}`);

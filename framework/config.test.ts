@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { defineSite } from './config';
+import { defineSite, otherSitesFlows } from './config';
 import { fingerprint, keyFor } from './inventory';
 
 describe('defineSite', () => {
@@ -42,6 +42,32 @@ describe('defineSite', () => {
 
     expect(site.pageKey(url)).toBe('/product/42?color=red');
     expect(site.pageTemplate(url)).toBe('/product/:id');
+  });
+});
+
+describe('site names', () => {
+  it('accepts folder-safe names', () => {
+    expect(() => defineSite({ name: 'shop-2_eu', baseURL: 'https://shop.test' })).not.toThrow();
+  });
+
+  it.each(['Shop', 'my shop', '../shop', 'shop/eu', ''])('rejects %j', name => {
+    expect(() => defineSite({ name, baseURL: 'https://shop.test' })).toThrow(/Invalid site name/);
+  });
+});
+
+describe('otherSitesFlows', () => {
+  const ignore = otherSitesFlows('shop');
+
+  it("ignores other sites' flows", () => {
+    expect(ignore.test('/repo/tests/flows/blog/home.spec.ts')).toBe(true);
+    expect(ignore.test('/repo/tests/flows/shop-eu/cart.spec.ts')).toBe(true);
+    expect(ignore.test('C:\\repo\\tests\\flows\\blog\\home.spec.ts')).toBe(true);
+  });
+
+  it("keeps the active site's flows and the generated suites", () => {
+    expect(ignore.test('/repo/tests/flows/shop/cart.spec.ts')).toBe(false);
+    expect(ignore.test('C:\\repo\\tests\\flows\\shop\\cart.spec.ts')).toBe(false);
+    expect(ignore.test('/repo/tests/discovered/pages.spec.ts')).toBe(false);
   });
 });
 

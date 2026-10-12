@@ -1,4 +1,4 @@
-import { test, expect } from '../../framework/fixtures';
+import { test, expect } from '../../../framework/fixtures';
 
 test('contact form submits after confirmation', async ({ page }) => {
   await page.goto('/contact_us');

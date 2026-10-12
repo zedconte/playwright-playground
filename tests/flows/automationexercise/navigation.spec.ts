@@ -1,4 +1,4 @@
-import { test, expect } from '../../framework/fixtures';
+import { test, expect } from '../../../framework/fixtures';
 
 test.describe('navigation', () => {
   test('browses a category from the sidebar', async ({ page }) => {

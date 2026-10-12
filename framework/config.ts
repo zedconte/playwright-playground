@@ -142,8 +142,22 @@ const defaults: Omit<SiteConfig, 'name' | 'baseURL' | 'title'> = {
   },
 };
 
+/** Site names become file and folder names: `.discovery/<name>.json`, `tests/flows/<name>/`. */
+const SITE_NAME = /^[a-z0-9][a-z0-9_-]*$/;
+
+/**
+ * Matches hand-written flows that do not belong to `siteName`. Each site keeps its flows in
+ * `tests/flows/<site>/`, so a run only collects the active site's flows plus the generated suites.
+ */
+export function otherSitesFlows(siteName: string): RegExp {
+  return new RegExp(`[\\\\/]tests[\\\\/]flows[\\\\/](?!${siteName}[\\\\/])`);
+}
+
 /** Merges a site profile over the framework defaults. */
 export function defineSite(input: SiteConfigInput): SiteConfig {
+  if (!SITE_NAME.test(input.name)) {
+    throw new Error(`Invalid site name "${input.name}": use lowercase letters, digits, "-" and "_".`);
+  }
   return {
     ...defaults,
     ...input,

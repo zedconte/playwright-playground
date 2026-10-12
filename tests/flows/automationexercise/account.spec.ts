@@ -1,4 +1,4 @@
-import { test, expect } from '../../framework/fixtures';
+import { test, expect } from '../../../framework/fixtures';
 
 test.describe('account', () => {
   test('rejects an unknown login', async ({ page }) => {

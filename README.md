@@ -22,20 +22,20 @@ open coverage-report/index.html
 
 ## Commands
 
-| Command                                        | What it does                                                                                                                         |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `npm test`                                     | Builds the dashboard, re-discovers the site if the inventory is missing, older than 24 h or the config changed, then runs every test |
-| `npm run discover`                             | Forces a fresh crawl and writes `.discovery/<site>.json`                                                                             |
-| `npm run test:authored`                        | Hand-written flows only (`tests/flows/`)                                                                                             |
-| `npm run test:discovered`                      | Generated suites only (`tests/discovered/`, tag `@discovered`)                                                                       |
-| `npx playwright test tests/flows/cart.spec.ts` | A single file. Add `-g "quantity"` to run a single test                                                                              |
-| `npm run report`                               | Opens Playwright's HTML report                                                                                                       |
-| `npm run dashboard:dev`                        | Runs the Vue dashboard with hot reload, using the last run's `coverage-report/coverage.json`                                         |
-| `npm run typecheck`                            | `tsc` for the framework and tests, `vue-tsc` for the dashboard                                                                       |
-| `npm run test:unit`                            | Unit tests (Vitest); `test:unit:watch` re-runs them on save                                                                          |
-| `npm run lint` / `lint:fix`                    | ESLint, with zero warnings allowed / autofix                                                                                         |
-| `npm run format` / `format:check`              | Prettier: rewrite files / check only                                                                                                 |
-| `npm run check`                                | Everything except the browser tests: typecheck, lint, format check, unit tests                                                       |
+| Command                                                           | What it does                                                                                                                         |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `npm test`                                                        | Builds the dashboard, re-discovers the site if the inventory is missing, older than 24 h or the config changed, then runs every test |
+| `npm run discover`                                                | Forces a fresh crawl and writes `.discovery/<site>.json`                                                                             |
+| `npm run test:authored`                                           | Hand-written flows only (`tests/flows/<site>/`)                                                                                      |
+| `npm run test:discovered`                                         | Generated suites only (`tests/discovered/`, tag `@discovered`)                                                                       |
+| `npx playwright test tests/flows/automationexercise/cart.spec.ts` | A single file. Add `-g "quantity"` to run a single test                                                                              |
+| `npm run report`                                                  | Opens Playwright's HTML report                                                                                                       |
+| `npm run dashboard:dev`                                           | Runs the Vue dashboard with hot reload, using the last run's `coverage-report/coverage.json`                                         |
+| `npm run typecheck`                                               | `tsc` for the framework and tests, `vue-tsc` for the dashboard                                                                       |
+| `npm run test:unit`                                               | Unit tests (Vitest); `test:unit:watch` re-runs them on save                                                                          |
+| `npm run lint` / `lint:fix`                                       | ESLint, with zero warnings allowed / autofix                                                                                         |
+| `npm run format` / `format:check`                                 | Prettier: rewrite files / check only                                                                                                 |
+| `npm run check`                                                   | Everything except the browser tests: typecheck, lint, format check, unit tests                                                       |
 
 ## How it works
 
@@ -70,7 +70,7 @@ test('adds to cart', async ({ page }) => {
 });
 ```
 
-Put hand-written tests in `tests/flows/`.
+Put hand-written tests in `tests/flows/<site>/`, for example `tests/flows/automationexercise/`. A run only collects the active site's folder, so flows for different sites never run against the wrong one. The generated suites in `tests/discovered/` run for every site.
 
 ### Unit tests
 
@@ -102,7 +102,14 @@ Everything site-specific lives in a profile under `sites/`. See `sites/automatio
 | `checks.*`                                                         | Toggle console-error, broken-image, drift, link and form checks, and set sample form values     |
 | `report.thresholds`, `failOnThreshold`                             | Set coverage targets (shown on the dashboard) and optionally fail the run when they're missed   |
 
-To add a site, create `sites/<name>.ts` with `defineSite({...})`, register it in `sites/index.ts`, and run with `SITE=<name> npm test`.
+### Adding a site
+
+1. Create `sites/<name>.ts` with `defineSite({ name: '<name>', baseURL: '…' })`. Names must be lowercase letters, digits, `-` or `_`, because they become file and folder names.
+2. Add it to the `profiles` list in `sites/index.ts`.
+3. Run `SITE=<name> npm test`. Discovery crawls the site into `.discovery/<name>.json`, and the generated suites test it straight away.
+4. Add hand-written flows over time in `tests/flows/<name>/`.
+
+Without `SITE`, runs use `automationexercise` (`DEFAULT_SITE` in `framework/site.ts`). Each site keeps its own inventory, but `coverage-report/` holds the dashboard of the last run only. To keep one per site, set `report.outputDir` in the profile. CI runs the default site only.
 
 ## CI and the published dashboard
 
